@@ -1,48 +1,38 @@
-package com.example.tp2 ; // Vérifie que le package correspond au tien
+package com.example.tp2; // Ton package simplifié
 
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private SensorManager sensorManager;
-    private ListView sensorListView;
+    private TextView resultMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sensorListView = findViewById(R.id.sensorListView);
+        resultMessage = findViewById(R.id.sensorResultMessage);
 
-        // 1. Récupérer le service des capteurs
+        // 1. Récupérer le service
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
-        // 2. Obtenir la liste de tous les capteurs
-        List<Sensor> sensorList = sensorManager.getSensorList(Sensor.TYPE_ALL);
-
-        // 3. Extraire les noms des capteurs pour l'affichage
-        List<String> sensorNames = new ArrayList<>();
-        for (Sensor s : sensorList) {
-            sensorNames.add(s.getName() + " - " + s.getVendor());
+        // 2. Tester la présence du capteur de pression (Baromètre)
+        // On peut tester d'autres types comme Sensor.TYPE_GYROSCOPE ou TYPE_PROXIMITY
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null) {
+            // Le capteur est présent
+            resultMessage.setText("✅ Capteur de pression détecté !\nLes fonctionnalités météo sont activées.");
+            resultMessage.setTextColor(Color.GREEN);
+        } else {
+            // Le capteur est absent
+            resultMessage.setText("❌ Capteur de pression absent.\nLes fonctionnalités liées à l'altitude et à la météo sont indisponibles sur cet appareil.");
+            resultMessage.setTextColor(Color.RED);
         }
-
-        // 4. Créer un Adapter pour lier la liste au composant graphique
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_list_item_1,
-                sensorNames
-        );
-
-        // 5. Afficher la liste
-        sensorListView.setAdapter(adapter);
     }
 }

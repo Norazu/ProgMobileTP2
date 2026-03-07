@@ -4,21 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:gravity="center"
+    android:padding="20dp">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/sensorStatusTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Capteurs disponibles :"
-        android:textSize="20sp"
+        android:text="Vérification du Baromètre"
+        android:textSize="22sp"
         android:textStyle="bold"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="20dp"/>
 
-    <ListView
-        android:id="@+id/sensorListView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+    <TextView
+        android:id="@+id/sensorResultMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Analyse en cours..."
+        android:textSize="18sp"
+        android:textAlignment="center"/>
 
 </LinearLayout>
