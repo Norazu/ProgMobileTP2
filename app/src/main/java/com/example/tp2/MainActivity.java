@@ -1,68 +1,110 @@
 package com.example.tp2;
 
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+import java.util.List;
 
-    private SensorManager sensorManager;
-    private Sensor proximitySensor;
-    private ImageView proximityImage;
-    private TextView proximityValue;
+public class MainActivity extends AppCompatActivity implements LocationListener {
+
+    private LocationManager locationManager;
+    private TextView latText, lonText;
+    private static final int PERMISSION_REQUEST_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        proximityImage = findViewById(R.id.proximityImage);
-        proximityValue = findViewById(R.id.proximityValue);
+        latText = findViewById(R.id.latText);
+        lonText = findViewById(R.id.lonText);
 
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        if (sensorManager != null) {
-            proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        // 1. Vérifier si on a déjà la permission
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Sinon, la demander à l'utilisateur
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    PERMISSION_REQUEST_CODE);
+        } else {
+            // Si on l'a déjà, on lance la détection
+            demarrerGeoloc();
         }
     }
 
+    // 2. Cette méthode est appelée AUTOMATIQUEMENT quand l'utilisateur clique sur Autoriser/Refuser
     @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-            float distance = event.values[0];
-            proximityValue.setText("Distance : " + distance + " cm");
-
-            // La plupart des capteurs renvoient 0 pour "proche"
-            // et une valeur > 0 pour "loin"
-            if (distance < proximitySensor.getMaximumRange()) {
-                // OBJET PROCHE
-                proximityImage.setImageResource(android.R.drawable.presence_online);
-                // Note : Tu peux utiliser tes propres images dans res/drawable
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission accordée !
+                demarrerGeoloc();
             } else {
-                // OBJET LOIN
-                proximityImage.setImageResource(android.R.drawable.presence_invisible);
+                Toast.makeText(this, "Permission GPS refusée", Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (proximitySensor != null) {
-            sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_UI);
+    private void demarrerGeoloc() {
+        try {
+            // On essaie d'afficher la dernière position connue pour ne pas attendre le "fix"
+            Location lastKnown = null;
+            List<String> providers = locationManager.getProviders(true);
+            for (String provider : providers) {
+                Location l = locationManager.getLastKnownLocation(provider);
+                if (l != null && (lastKnown == null || l.getAccuracy() < lastKnown.getAccuracy())) {
+                    lastKnown = l;
+                }
+            }
+            if (lastKnown != null) {
+                onLocationChanged(lastKnown);
+            }
+
+            // On demande des mises à jour en temps réel (GPS et Réseau)
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 2, this);
+            }
+            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 2, this);
+            }
+
+        } catch (SecurityException e) {
+            e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        // Mise à jour de l'interface
+        latText.setText("Latitude : " + location.getLatitude());
+        lonText.setText("Longitude : " + location.getLongitude());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(this);
+        // On arrête d'écouter pour ne pas vider la batterie
+        locationManager.removeUpdates(this);
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+    public void onStatusChanged(String provider, int status, Bundle extras) {}
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {}
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        Toast.makeText(this, "Veuillez activer le GPS", Toast.LENGTH_SHORT).show();
+    }
 }

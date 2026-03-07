@@ -8,26 +8,25 @@
     android:padding="20dp">
 
     <TextView
-        android:id="@+id/proximityTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Capteur de proximité"
-        android:textSize="22sp"
-        android:layout_marginBottom="30dp"/>
-
-    <ImageView
-        android:id="@+id/proximityImage"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:scaleType="centerInside"
-        android:src="@android:drawable/presence_invisible" />
+        android:text="Ma Position GPS"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"/>
 
     <TextView
-        android:id="@+id/proximityValue"
+        android:id="@+id/latText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Distance : --"
+        android:text="Latitude : --"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/lonText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Longitude : --"
         android:textSize="18sp" />
 
 </LinearLayout>
