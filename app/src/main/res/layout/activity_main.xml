@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
     android:padding="20dp">
 
     <TextView
-        android:id="@+id/sensorStatusTitle"
+        android:id="@+id/accelValues"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Vérification du Baromètre"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="20dp"/>
+        android:text="Valeur accélération : 0"
+        android:textSize="24sp"
+        android:layout_centerInParent="true"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/sensorResultMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Analyse en cours..."
-        android:textSize="18sp"
-        android:textAlignment="center"/>
-
-</LinearLayout>
+</RelativeLayout>
