@@ -8,20 +8,11 @@
     android:padding="20dp">
 
     <TextView
-        android:id="@+id/directionText"
+        android:id="@+id/statusText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bougez le téléphone"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:textColor="#333333" />
-
-    <TextView
-        android:id="@+id/debugValues"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="x: 0 | y: 0"
-        android:textSize="14sp" />
+        android:text="Secouez pour allumer"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
 </LinearLayout>
