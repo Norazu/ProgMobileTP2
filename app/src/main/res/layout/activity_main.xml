@@ -8,11 +8,26 @@
     android:padding="20dp">
 
     <TextView
-        android:id="@+id/statusText"
+        android:id="@+id/proximityTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Secouez pour allumer"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:text="Capteur de proximité"
+        android:textSize="22sp"
+        android:layout_marginBottom="30dp"/>
+
+    <ImageView
+        android:id="@+id/proximityImage"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:scaleType="centerInside"
+        android:src="@android:drawable/presence_invisible" />
+
+    <TextView
+        android:id="@+id/proximityValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Distance : --"
+        android:textSize="18sp" />
 
 </LinearLayout>

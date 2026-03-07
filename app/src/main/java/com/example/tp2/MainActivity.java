@@ -1,91 +1,60 @@
 package com.example.tp2;
 
-import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private SensorManager sensorManager;
-    private Sensor accelerometer;
-    private CameraManager cameraManager;
-    private String cameraId;
-    private TextView statusText;
-
-    private boolean isFlashOn = false;
-
-    // Paramètres pour la détection du secouement (Shake)
-    private static final float SHAKE_THRESHOLD = 20.0f; // Force de la secousse
-    private long lastUpdate = 0;
+    private Sensor proximitySensor;
+    private ImageView proximityImage;
+    private TextView proximityValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        statusText = findViewById(R.id.statusText);
+        proximityImage = findViewById(R.id.proximityImage);
+        proximityValue = findViewById(R.id.proximityValue);
 
-        // Initialisation capteurs
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
-        // Initialisation caméra pour le flash
-        cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        try {
-            cameraId = cameraManager.getCameraIdList()[0]; // Généralement la caméra arrière
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        if (sensorManager != null) {
+            proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         }
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            float x = event.values[0];
-            float y = event.values[1];
-            float z = event.values[2];
+        if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+            float distance = event.values[0];
+            proximityValue.setText("Distance : " + distance + " cm");
 
-            // On calcule l'accélération globale en retirant la gravité environ
-            double gForce = Math.sqrt(x * x + y * y + z * z) - SensorManager.GRAVITY_EARTH;
-
-            // Si la force dépasse le seuil
-            if (gForce > SHAKE_THRESHOLD) {
-                long currentTime = System.currentTimeMillis();
-                // On limite la détection à une fois toutes les 500ms pour éviter les clignotements fous
-                if (currentTime - lastUpdate > 500) {
-                    lastUpdate = currentTime;
-                    toggleFlash();
-                }
-            }
-        }
-    }
-
-    private void toggleFlash() {
-        try {
-            isFlashOn = !isFlashOn;
-            cameraManager.setTorchMode(cameraId, isFlashOn);
-
-            if (isFlashOn) {
-                statusText.setText("🔦 LAMPE ALLUMÉE");
+            // La plupart des capteurs renvoient 0 pour "proche"
+            // et une valeur > 0 pour "loin"
+            if (distance < proximitySensor.getMaximumRange()) {
+                // OBJET PROCHE
+                proximityImage.setImageResource(android.R.drawable.presence_online);
+                // Note : Tu peux utiliser tes propres images dans res/drawable
             } else {
-                statusText.setText("🌑 LAMPE ÉTEINTE");
+                // OBJET LOIN
+                proximityImage.setImageResource(android.R.drawable.presence_invisible);
             }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        if (proximitySensor != null) {
+            sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_UI);
+        }
     }
 
     @Override
