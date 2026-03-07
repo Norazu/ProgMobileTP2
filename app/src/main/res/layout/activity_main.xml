@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
     android:padding="20dp">
 
     <TextView
-        android:id="@+id/accelValues"
+        android:id="@+id/directionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Valeur accélération : 0"
-        android:textSize="24sp"
-        android:layout_centerInParent="true"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold" />
+        android:text="Bougez le téléphone"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#333333" />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/debugValues"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="x: 0 | y: 0"
+        android:textSize="14sp" />
+
+</LinearLayout>
